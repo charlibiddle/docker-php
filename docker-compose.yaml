@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+
+  postgres:
+    build:
+      context: .docker/postgres
+    ports:
+      - "5480:5432"
+    restart: always
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+
+  nginx:
+    build:
+      context: .docker/nginx
+    ports:
+      - "8080:80"
+      - "8081:81"
+    volumes:
+      - .:/app
+      - .docker/nginx/sites:/etc/nginx/conf.d
+
+  php:
+    build:
+      context: .docker/php
+      target: fpm
+    volumes:
+      - .:/app
+
+  xdebug:
+    build:
+      context: .docker/php
+      target: xdebug
+    volumes:
+      - .:/app
+
+  php-cli:
+    build:
+      context: .docker/php-cli
+    volumes:
+      - .:/app
